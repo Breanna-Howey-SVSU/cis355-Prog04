@@ -1,4 +1,7 @@
 <?php
+
+//assistance from Koltan Kovac's code
+
 class Customer { 
     public $id;
     public $name;
@@ -321,71 +324,6 @@ class Customer {
 				<p>*Min of 255 characters</p>
 				<br/>";
 	}
-	
-	function send_email() {
-		if ($this->fieldsAllValid()) {
-			$_SESSION['name'] = htmlspecialchars($this->name);
-			$_SESSION['email'] = htmlspecialchars($this->email);
-			$_SESSION['mobile'] = htmlspecialchars($this->mobile);
-			if ($this->check_email()) {
-				//send email with custom code
-				$chs = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890!@#$%^&*()-=';
-				$chs = str_shuffle($chs);
-				$_SESSION['conCode']= substr($chs, 0, 10);
-				
-				$to = $this->email;
-				$subject = "Email Confirmation";
-				$message = "Hello " . $this->name . ", Here is your confirmation code: " . $_SESSION['conCode'];
-				$headers = "From: noreply-kbkovac@svsu.edu \r\nReply-To: noreply-kbkovac@svsu.edu";
-				if (mail($to, $subject, $message, $headers)) {
-					$this->confirm_page();
-				}
-				else {
-					$this->confirmCodeError = 'Email could not send.';
-					$this->confirm_page();
-				}
-			}
-			else {
-				$this->emailError = 'This email has already been registered!';
-				$this->create_record();
-			}
-		}
-		else {
-			$this->create_record();
-		}
-	}
-	
-	function verify_email() {
-		if (isset($_POST['code'])) {
-			$theirCode = htmlspecialchars($_POST['code']);
-			if ($theirCode == htmlspecialchars($_SESSION['conCode'])) {
-				$this->insert_db_record();
-			}
-			else {
-				$this->confirmCodeError = "Code does not match!";
-				$this->confirm_page();
-			}
-		}
-		else {
-			$this->confirmCodeError = "Please enter code!";
-			$this->confirm_page();
-		}
-	}
-	
-	private function check_email() {
-		$valid = false;
-		$pdo = Database::connect();
-		$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		$sql = $sql = "SELECT * FROM $this->tableName WHERE email = ? LIMIT 1";
-		$q = $pdo->prepare($sql);
-		$q->execute(array($this->email));
-		$data = $q->fetch(PDO::FETCH_ASSOC);
-		if (!($data)) {
-			$valid = true; // valid email to register/create new user with
-		}
-		Database::disconnect();
-		return $valid;
-	}
    
 	private function check_password() {
 		$valid = true;
@@ -642,6 +580,9 @@ class Customer {
         echo "
             </head>
             <a href='https://github.com/brhowey/cis355-Prog04' target='_blank'>Github</a><br />
+            <a href='https://raw.githubusercontent.com/brhowey/cis355-Prog03/master/uml%201.png' target='_blank'>Prog 03 Diagram #1</a><br />
+            <a href='https://raw.githubusercontent.com/brhowey/cis355-Prog03/master/uml%202.png' target='_blank'>Prog 03 Diagram #2</a><br />
+            <a href='https://raw.githubusercontent.com/brhowey/cis355-Prog04/master/prog%2004.PNG' target='_blank'>Prog 04 UML</a><br />
             <body>
                 <div class='container'>
                     <p class='row'>
